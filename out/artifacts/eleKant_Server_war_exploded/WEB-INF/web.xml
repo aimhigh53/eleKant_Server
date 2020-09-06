@@ -11,7 +11,7 @@
     <absolute-ordering />
 
     <servlet>
-        <!-- DispatcherServlet을 dispatcher라는 이름으로 등록한다.  -->
+        <!-- Dispatcher Servlet을 dispatcher라는 이름으로 등록한다.  -->
         <servlet-name>dispatcher</servlet-name>
         <servlet-class>
             org.springframework.web.servlet.DispatcherServlet
