@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans    http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop    http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/context    http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/jee    http://www.springframework.org/schema/jee/spring-jee.xsd
+        http://www.springframework.org/schema/lang    http://www.springframework.org/schema/lang/spring-lang.xsd
+        http://www.springframework.org/schema/tx    http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/util    http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/task
+        http://www.springframework.org/schema/task/spring-task.xsd">
+
+
+    <context:annotation-config />
+
+    <!-- 트랜잭션 관리자 활성화 -->
+    <tx:annotation-driven/>
+
+    <!-- 트랜잭션 관리자 등록 -->
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <!-- JPA 예외를 스프링 예외로 변환 -->
+    <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
+    <!-- JPA 설정 ( 엔티티 매니저 팩토리 등록 ) -->
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+
+        <!-- @Entity 탐색 범위 -->
+        <property name="packagesToScan" value="com.elekant.domain" />
+
+        <!-- 하이버네이트 구현체 사용 -->
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
+        </property>
+
+        <!-- 하이버네이트 상세 설정 -->
+        <property name="jpaProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</prop> <!-- 방언 -->
+                <prop key="hibernate.show_sql">true</prop>                          <!-- SQL 보기 -->
+                <prop key="hibernate.format_sql">true</prop>                        <!-- SQL 정렬해서 보기 -->
+                <prop key="hibernate.use_sql_comments">true</prop>                  <!-- SQL 주석 보기 -->
+                <prop key="hibernate.id.new_generator_mappings">true</prop>         <!-- JPA 표준에 맞게 새로운 키 생성 전략을 사용-->
+                <prop key="hibernate.hbm2ddl.auto">create</prop>                    <!-- DDL 자동 생성 -->
+            </props>
+        </property>
+    </bean>
+
+    <!-- Connection Pool DataSource -->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="url" value="jdbc:mysql://localhost:3306/ElekantDB" />
+        <property name="username" value="root" />
+        <property name="password" value="root" />
+    </bean>
+
+    <context:component-scan base-package="com.elekant.service, com.elekant.repository, com.elekant.controller">
+        <context:include-filter type="annotation"
+                                expression="org.springframework.stereotype.Repository" />
+        <context:include-filter type="annotation"
+                                expression="org.springframework.stereotype.Service" />
+        <context:include-filter type="annotation"
+                                expression="org.springframework.stereotype.Component" />
+    </context:component-scan>
+
+</beans>
